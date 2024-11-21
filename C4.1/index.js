@@ -1,7 +1,13 @@
 'use strict';
 
 const express = require('express');
+const cors = require('cors'); // Obsługa CORS
 const app = express();
+
+// Włączenie CORS
+app.use(cors());
+
+app.use(express.static('C4.2'));
 
 // Endpoint domyślny
 app.get('/', (req, res) => {
@@ -50,6 +56,42 @@ app.get('/math/power/:base/:exponent', (req, res) => {
     }
 
     res.json(response);
+});
+
+// Dane
+let categories = ['funnyJoke', 'lameJoke'];
+
+let funnyJoke = [
+  { 'joke': 'Dlaczego komputer poszedł do lekarza?', 'response': 'Bo złapał wirusa!' },
+  { 'joke': 'Dlaczego komputer nie może być głodny?', 'response': 'Bo ma pełen dysk!' },
+  { 'joke': 'Co mówi jeden bit do drugiego?', 'response': '„Trzymaj się, zaraz się przestawiamy!”' }
+];
+
+let lameJoke = [
+  { 'joke': 'Dlaczego programiści preferują noc?', 'response': 'Bo w nocy jest mniej bugów do łapania!' },
+  { 'joke': 'Jak nazywa się bardzo szybki programista?', 'response': 'Błyskawiczny kompilator!' }
+];
+
+// Endpoint 1: Zwraca listę kategorii
+app.get('/jokebook/categories', (req, res) => {
+  res.json(categories);
+});
+
+// Endpoint 2: Zwraca losowy żart z wybranej kategorii
+app.get('/jokebook/joke/:category', (req, res) => {
+  const category = req.params.category;
+
+  // Sprawdzenie, która kategoria została wybrana
+  if (category === 'funnyJoke') {
+    const randomJoke = funnyJoke[Math.floor(Math.random() * funnyJoke.length)];
+    res.json(randomJoke);
+  } else if (category === 'lameJoke') {
+    const randomJoke = lameJoke[Math.floor(Math.random() * lameJoke.length)];
+    res.json(randomJoke);
+  } else {
+    // Jeśli podano nieprawidłową kategorię
+    res.status(404).json({ error: `no jokes for category [${category}]` });
+  }
 });
 
 // Uruchomienie serwera
